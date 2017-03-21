@@ -1,0 +1,9 @@
+﻿  dynamics.c
+d:\lander06\lander\dynamics.c(293): warning C4013: 'alien_iner' undefined; assuming extern returning int
+d:\lander06\lander\dynamics.c(294): warning C4013: 'lander_iner' undefined; assuming extern returning int
+d:\lander06\lander\dynamics.c(270): warning C4101: 'j': unreferenced local variable
+d:\lander06\lander\dynamics.c(272): warning C4101: 'inertia': unreferenced local variable
+d:\lander06\lander\dynamics.c(271): warning C4101: 'vector': unreferenced local variable
+mrdplot.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+  simulate.vcxproj -> D:\lander06\lander\.\simulate.exe
+  simulate.vcxproj -> .\simulate.pdb (Full PDB)
