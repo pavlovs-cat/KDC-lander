@@ -375,7 +375,7 @@ int main (int argc, char **argv)
 #ifdef WIN32
   fn.path_to_textures = "C:/cga/kdc/walk02/useful/drawstuff-windows/textures";
 #else
-  fn.path_to_textures = "/home/catherine/Documents/lander07/useful/drawstuff-linux/textures";
+  fn.path_to_textures = "../useful/drawstuff-linux/textures";
 #endif
 
   // do display
