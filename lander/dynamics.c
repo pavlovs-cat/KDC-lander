@@ -343,9 +343,9 @@ void reinit_dynamics( SIM *s )
   sdfast_state[ALIEN_XD] = 0.05;
   sdfast_state[ALIEN_YD] = 0.02;
   sdfast_state[ALIEN_ZD] = 0.01;
-  sdfast_state[ALIEN_WX] = 0.3/3;
-  sdfast_state[ALIEN_WY] = 1.0/3;
-  sdfast_state[ALIEN_WZ] = 0.1/3;
+  sdfast_state[ALIEN_WX] = 2.0;
+  sdfast_state[ALIEN_WY] = 4.0;
+  sdfast_state[ALIEN_WZ] = 1.0;
 
   set_alien_sdfast_state( s, sdfast_state );
 
