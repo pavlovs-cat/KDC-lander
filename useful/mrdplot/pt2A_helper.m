@@ -37,8 +37,8 @@ t = q_avg - R*p_avg;    % translation
 % coordinates with the given q.
 transformedP = R*p + repmat(t,1,n);
 % q
-diff = transformedP - q     % reprojection error
+diff = transformedP - q;     % reprojection error
 
-quaternion = rotm2quat(R)
+quaternion = rotm2quat(R);
 end
 
