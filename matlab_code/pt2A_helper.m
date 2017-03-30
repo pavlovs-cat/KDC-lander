@@ -1,4 +1,4 @@
-function [ quaternion ] = pt2A_helper( p, q )
+function [ quaternion, varargout] = pt2A_helper( p, q )
 % Lauren Lieu
 
 % INSTRUCTIONS: SVD algorithm for rigid transforms.
@@ -40,5 +40,8 @@ transformedP = R*p + repmat(t,1,n);
 diff = transformedP - q;     % reprojection error
 
 quaternion = rotm2quat(R);
+if nargout == 2
+    varargout{1} = R;
+end
 end
 

@@ -33,7 +33,7 @@ n_p = 6; % com 3, vel 3
 p0(n_p) = 0;
 
 % Run optimisation
-[answer,~,~] = fminunc(@criterion,p0,options);
+[answer,~,~] = fminunc(@optim_com_criterion,p0,options);
 
 % Extract return values
 com = answer(1:3);

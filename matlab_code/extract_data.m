@@ -1,23 +1,25 @@
-function vec = extract_data(data_file, prefix, n, t)
+function vec = extract_data(data_file, prefix, n, t_idx_vec)
 %EXTRACT_DATA Extracts data from a git binary data file using MRD
 %   prefix is the id of the data in the file
 %   ids    are the sub ids for the prefix
-%   t      times at which to extract data
+%   t_idx  times at which to extract data
 
-vec = horzcat(t',zeros(length(t),24));
+N = length(n);
+
+vec = zeros(length(t_idx_vec), N);
 
 % Extracts data into matrix D, modify string to read a particulary binary
 [D,names,~,~] = mrdplot_convert(data_file);
 
-alienIndx = zeros(1,length(n));
+data_idx = zeros(1, N);
 for idx = 1:length(n)
-    var_name = strcat(prefix,n(idx));
-    alienIndx(idx) = findMRDPLOTindex(names, var_name);
+    var_name = strcat(prefix, char(n(idx)));
+    data_idx(idx) = findMRDPLOTindex(names, var_name);
 end
 
-for j = 1:length(t)
-    rowNo = find(D(:,1)==t(j));
-    vec(j,2:end) = D(rowNo,alienIndx(1):alienIndx(end));
+for idx = 1:N
+    for j = t_idx_vec
+        vec(j,idx) = D(j, data_idx(idx));
+    end
 end
-
 end

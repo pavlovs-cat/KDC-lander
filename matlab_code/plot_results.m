@@ -8,8 +8,11 @@ function plot_results(simulated, approximated, times, name)
 % Plot the simulation results
 figure;
 hold on;
-plot(times, simulated, 'r-^')
-plot(times, approximated, 'b-o')
+size(times)
+size(simulated)
+size(approximated)
+plot(times, simulated, 'r-')
+plot(times, approximated, 'b-')
 legend('Simulated', 'Approximated')
 xlabel('time (s)')
 ylabel(name);
