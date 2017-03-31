@@ -11,7 +11,7 @@ Nframes = length(Rots);
 % Initialise output vector
 th = zeros(3, Nframes);
 
-% Compute angular rotations
+% Compute angular rotations about each axis
 for idx = 1:Nframes
     R = Rots(:,:,idx);
     th(1, idx) = atan2(R(3,2), R(3,3));

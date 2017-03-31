@@ -17,14 +17,14 @@ end
 th = rot2ang(Rots);
 
 % Compute first value using forward difference
-w_vec(:,1) = (th(:,2) - th(:,1))/tstep;
+w_vec(:,1) = ang_diff(th(:,2), th(:,1))/tstep;
 
-% Compute remaining frames using central differences
+% Compute remainin frames using central differences
 for idx = 2:Nframes-1
-   w_vec(:,idx) = (th(:,idx+1) - th(:, idx-1))/(2*tstep); 
+   w_vec(:,idx) = ang_diff( th(:,idx+1), th(:, idx-1) )/(2*tstep);
 end
 
 % Compute last frame using backward differences
-w_vec(:, end) = (th(:,end) - th(:,end-1))/tstep;
+w_vec(:, end) = ang_diff( th(:,end), th(:,end-1) )/tstep;
 
 end
