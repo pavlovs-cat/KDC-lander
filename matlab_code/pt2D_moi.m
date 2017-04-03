@@ -11,14 +11,14 @@ I = sym('I', [3 3]);
 % omega = sym('omega', [3 1]);
 
 for i = 1:n
-    tau = I*alpha + crosAs(omega,I*omega);
+    tau = I*alpha(:, i) + cross(omega(:, i),I*omega(:, i));
     [A, ~] = equationsToMatrix([tau(1), tau(2), tau(3)], ...
         [I(1,1), I(1,2), I(1,3), I(2,1), I(2,2), ...
         I(2,3), I(3,1), I(3,2), I(3,3)]);
     optimA = vertcat(optimA,A);
 end
-
-inertiaMtx = null(optimA);
-inertiaMtx = reshape(inertiaMtx,3,3)';
+A = double(optimA)
+inertiaMtx = null(A)
+inertiaMtx = reshape(inertiaMtx(:, end),3,3)';
 % what coordinate frame is this??
 end

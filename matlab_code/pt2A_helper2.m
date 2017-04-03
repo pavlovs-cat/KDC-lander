@@ -1,4 +1,4 @@
-function [ quaternion ] = pt2A_helper( p, q )
+function [ quaternion, varargout] = pt2A_helper( p, q, p_avg, q_avg )
 % Lauren Lieu
 
 % INSTRUCTIONS: SVD algorithm for rigid transforms.
@@ -14,9 +14,6 @@ function [ quaternion ] = pt2A_helper( p, q )
 
 [~, n] = size(p);
 
-% Find the centroids of each set of n points on the rigid body
-p_avg = mean(p,2);
-q_avg = mean(q,2);
 
 % Initialize the covariance matrix H
 H = zeros(3);
@@ -38,7 +35,10 @@ t = q_avg - R*p_avg;    % translation
 transformedP = R*p + repmat(t,1,n);
 % q
 diff = transformedP - q;     % reprojection error
-
+norm(diff)
 quaternion = rotm2quat(R);
+if nargout == 2
+    varargout{1} = R;
+end
 end
 

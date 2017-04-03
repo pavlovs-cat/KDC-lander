@@ -8,12 +8,9 @@ function plot_results(simulated, approximated, times, name)
 % Plot the simulation results
 figure;
 hold on;
-size(times)
-size(simulated)
-size(approximated)
-plot(times, simulated, 'r-')
+plot(times, simulated, 'r^-')
 plot(times, approximated, 'b-')
-legend('Simulated', 'Approximated')
+legend('Simulated', 'Approximated'), 
 xlabel('time (s)')
 ylabel(name);
 title({sprintf('%s vs time', name)}, 'interpreter', 'Latex');

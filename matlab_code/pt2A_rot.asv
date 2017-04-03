@@ -70,7 +70,7 @@ plot_results(w_sim(2, :), w_vec2(2, :), times(1:N), 'w_y');
 plot_results(w_sim(3, :), w_vec2(3, :), times(1:N), 'w_z');
 
 % Compute angular accelerations
-w_dot_vec = pt2C_angacc(w_vec2, tau);
+w_dot_vec = pt2C_angacc2(w_vec2, tau);
 
 % Plot accelerations for comparison
 %plot_results(w_dot_sim(1, :), w_dot_vec(1, :), times, 'w_x');
@@ -78,8 +78,4 @@ w_dot_vec = pt2C_angacc(w_vec2, tau);
 %plot_results(w_dot_sim(3, :), w_dot_vec(3, :), times, 'w_z');
 
 % Compute Moment of Inertia matrix
-I = pt2D_moi(w_vec2, w_dot_vec);
-
-
-% [ q,w,a ] = pt2E_traj(th2(:, end), w_vec2(:, end), w_dot_vec(:, end),...
-%                       I, tstep, 1000);
+I = pt2D_moi(w_vec, w_dot_vec);
