@@ -28,22 +28,17 @@ pos_vec = extract_data(data_file, 'ml', n, 1:(Nsim+1));
 
 % Generate COMs & location for first 10 seconds
 [com, vel] = optim_com();
-all_time = [0; init_times'];
-com_traj = horzcat(all_time,zeros(length(all_time),3));
-com_traj(1,2:4) = com;
-for k = 2:length(all_time)
-    com_traj(k,2:4) = com + vel*all_time(k,1);
-end
 
 % Uncomment to write txt file again
+% all_time = [0; init_times'];
+% com_traj = horzcat(all_time,zeros(length(all_time),3));
+% com_traj(1,2:4) = com;
+% for k = 2:length(all_time)
+%     com_traj(k,2:4) = com + vel*all_time(k,1);
+% end
 % dlmwrite('com_traj.txt',com_traj,'delimiter',' ','precision',6)
 
-% fileID = fopen('com_traj.txt','w');
-% fprintf(fileID,'%.4f %.4f %.4f %.4f\n', ...
-%     com_traj);
-% fclose(fileID);
-
-% store quaternions for each timestamp
+% Store quaternions for each timestamp
 artifact_rot = zeros(Nsim, 4);
 Rots = cat(3, eye(3), zeros(3, 3, Nsim));
 th2 = horzcat([1 0 0 0]',zeros(4, Nsim));
@@ -84,6 +79,7 @@ if gen_plot == 1
   plot_results(w_sim(2, 1:Nsim), w_vec2(2, :), init_times, 'w_y');
   plot_results(w_sim(3, 1:Nsim), w_vec2(3, :), init_times, 'w_z');
 end
+
 % Compute angular accelerations
 w_dot_vec = pt2C_angacc(w_vec2, tau);
 
