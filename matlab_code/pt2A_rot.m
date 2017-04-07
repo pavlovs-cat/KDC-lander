@@ -1,5 +1,5 @@
 
-%clear
+clear
 
 % File name to read data from
 data_file = 'd00063-default';
@@ -26,8 +26,22 @@ end
 % Exctract marker locations for initial period
 pos_vec = extract_data(data_file, 'ml', n, 1:(Nsim+1));
 
-% Generate COMs
-%[com, vel] = optim_com();
+% Generate COMs & location for first 10 seconds
+[com, vel] = optim_com();
+all_time = [0; init_times'];
+com_traj = horzcat(all_time,zeros(length(all_time),3));
+com_traj(1,2:4) = com;
+for k = 2:length(all_time)
+    com_traj(k,2:4) = com + vel*all_time(k,1);
+end
+
+% Uncomment to write txt file again
+% dlmwrite('com_traj.txt',com_traj,'delimiter',' ','precision',6)
+
+% fileID = fopen('com_traj.txt','w');
+% fprintf(fileID,'%.4f %.4f %.4f %.4f\n', ...
+%     com_traj);
+% fclose(fileID);
 
 % store quaternions for each timestamp
 artifact_rot = zeros(Nsim, 4);
@@ -37,7 +51,7 @@ th2 = horzcat([1 0 0 0]',zeros(4, Nsim));
 for j = 1:Nsim
     p = reshape(pos_vec(j, :), 3, 8);
     q = reshape(pos_vec(j+1, :), 3, 8);
-    artifact_rot(j,:) = pt2A_helper(p,q, com0, com1);
+    artifact_rot(j,:) = pt2A_helper(p,q);
     th2(:, j+1)  = quatmultiply(artifact_rot(j, :), th2(:, j)')';
 end
 

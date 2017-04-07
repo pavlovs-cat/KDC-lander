@@ -1,4 +1,4 @@
-function [ quaternion, varargout] = pt2A_helper( p, q, qcom, pcom )
+function [ quaternion, varargout] = pt2A_helper( p, q)
 % Lauren Lieu
 
 % INSTRUCTIONS: SVD algorithm for rigid transforms.
