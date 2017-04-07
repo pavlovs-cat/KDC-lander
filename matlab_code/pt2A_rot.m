@@ -17,8 +17,22 @@ end
 N = length(times)-1;
 pos_vec = extract_data(data_file, 'ml', n, 1:(N+1));
 
-% Generate COMs
+% Generate COMs & location for first 10 seconds
 [com, vel] = optim_com();
+allTime = [0; times'; 10];
+com_traj = horzcat(allTime,zeros(length(allTime),3));
+com_traj(1,2:4) = com;
+for k = 2:length(allTime)
+    com_traj(k,2:4) = com + vel*allTime(k,1);
+end
+
+% Uncomment to write txt file again
+% dlmwrite('com_traj.txt',com_traj,'delimiter',' ','precision',6)
+
+% fileID = fopen('com_traj.txt','w');
+% fprintf(fileID,'%.4f %.4f %.4f %.4f\n', ...
+%     com_traj);
+% fclose(fileID);
 
 % store quaternions for each timestamp
 artifact_rot = zeros(N,4);
@@ -35,7 +49,7 @@ for j = 2:N+1
     com1 = com0 + vel*tau;
     p = reshape(pos_vec(j-1, :),3,8);
     q = reshape(pos_vec(j, :),3,8);
-    [artifact_rot(j-1,:), R] = pt2A_helper(p,q, com0, com1);
+    [artifact_rot(j-1,:), R] = pt2A_helper(p,q);
     Rots(:,:,j) = R*Rots(:,:,j-1);
     th2(:, j) = quatmultiply(artifact_rot(j-1, :), th2(:, j-1)')'; 
     th(:, j-1) = rotm2quat(Rots(:,:,j));
