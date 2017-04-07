@@ -10,12 +10,15 @@ R1 = quat2rotm(q0);
 for k = 1:N
     R0 = R1;
     wk = w(:, k);
-    S = [  0     -wk(1)  wk(2);
+    S = [  0     -wk(3)  wk(2);
           wk(3)    0    -wk(1);
          -wk(2)   wk(1)    0  ];
     R1 = R0 + S*R0'*tstep;
     q(:, k+1) = rotm2quat(R1);
-    a(:, k) = I\cross(wk, I*wk);
     w(:, k+1) = wk + a(:, k)*tstep;
+    a(:, k+1) = -pinv(I)*cross(wk, I*wk);
 end
 
+q = q(:, 2:end);
+w = w(:, 2:end);
+a = a(:, 2:end);
