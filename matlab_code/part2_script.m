@@ -28,6 +28,13 @@ pos_vec = extract_data(data_file, 'ml', n, 1:(Nsim+1));
 
 % Generate COMs & location for first 10 seconds
 [com, vel] = optim_com();
+vel2 = [0.05 0.02 0.01];    %%% FIX OUR IMPLEMENTATION
+all_time = [0; init_times'];
+com_pos = horzcat(all_time,zeros(length(all_time),3));
+com_pos(1,2:4) = com;
+for k = 2:length(all_time)
+    com_pos(k,2:4) = com + vel2*all_time(k,1);
+end
 
 % Store quaternions for each timestamp
 artifact_rot = zeros(Nsim, 4);
@@ -47,13 +54,13 @@ th2 = [th2(1, :); -th2(3, :); th2(2, :); th2(4, :)];
 for j = 1:Nsim
    Rots(:, :, j+1) = quat2rotm(th2(:, j)'); 
 end
-%Rots = Rots(:, :, 2:end);
+% Rots = Rots(:, :, 2:end);
 th_sim =  extract_data(data_file, 'a_q', {'0', '1', '2', '3'}, 1 : Nsim+N)';
 
 % Plot  for orientation
 if gen_plot == 1
   plot_results(th_sim(1, 1:Nsim), th2(1, :), init_times, 'q_0');
-  plot_results(th_sim(2, 1:Nsim), th2(2, :), init_times, 'q_1');
+  plot_results(th_sim(2, 1:Nsinm), th2(2, :), init_times, 'q_1');
   plot_results(th_sim(3, 1:Nsim), th2(3, :), init_times, 'q_2');
   plot_results(th_sim(4, 1:Nsim), th2(4, :), init_times, 'q_3');
 end
@@ -75,9 +82,9 @@ end
 w_dot_vec = pt2C_angacc(w_vec2, tau);
 
 % Compute Moment of Inertia matrixs
-I2 = pt2D_moi(w_vec2, w_dot_vec);
+I = pt2D_moi(w_vec2, w_dot_vec);
 
-I = [0.1739 0 0; 0 0.5931  0; 0 0 0.7861]; 
+% I = [0.1739 0 0; 0 0.5931  0; 0 0 0.7861]; 
 [ q,w,a ] = pt2E_traj(th2(:, end-1), w_vec2(:, end-1), w_dot_vec(:, end-2),...
                       I, tau, N);
 if gen_plot == 1
@@ -87,12 +94,5 @@ if gen_plot == 1
 end
 
 % Uncomment to write txt file again
-vel2 = [0.05 0.02 0.01];
-all_time = [0; init_times'];
-com_traj = horzcat(all_time,zeros(length(all_time),3));
-com_traj(1,2:4) = com;
-for k = 2:length(all_time)
-    com_traj(k,2:4) = com + vel2*all_time(k,1);
-end
-com_traj = horzcat(com_traj,vertcat([1 0 0 0], th2'));
+com_traj = horzcat(com_pos,vertcat([1 0 0 0], th2'));
 % dlmwrite('com_traj.txt',com_traj,'delimiter',' ','precision',6)
