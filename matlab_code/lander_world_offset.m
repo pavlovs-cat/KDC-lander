@@ -1,4 +1,6 @@
-
+function [quat, R] = lander_world_offset()
+% Calculates the rotation for world -> lander frame
+% Returns the quaternion and rotation matrix that represent this transform
 
 % load markers
 t = 0:1:10;
@@ -24,4 +26,8 @@ markers_w = D(1,alienIndx_w(1):alienIndx_w(end));
 markers_l = reshape(markers_l,3,8);
 markers_w = reshape(markers_w,3,8);
 
-[ quaternion, R] = pt2A_helper(markers_w, markers_l)
+% Swap markers_w and markers_l to flip and get the transform 
+% for lander -> world
+[quat, R] = pt2A_helper(markers_w, markers_l);
+
+end

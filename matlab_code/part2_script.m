@@ -28,8 +28,15 @@ pos_vec = extract_data(data_file, 'ml', n, 1:(Nsim+1));
 
 % Generate COMs & location for first 10 seconds
 [com, vel] = optim_com();
+
 % COM velocity in the world frame, checked using mrdplot
 % vel_w = [0.05 0.02 0.01];
+
+% Calculates the rotation transform for
+% [world frame] --> [lander/assignment frame]
+% Use quat & R to check values with simulation data given by mrdplot
+[quat, R] = lander_world_offset();
+
 all_time = [0; init_times'];
 com_pos = horzcat(all_time,zeros(length(all_time),3));
 com_pos(1,2:4) = com;
@@ -83,7 +90,7 @@ end
 w_dot_vec = pt2C_angacc(w_vec2, tau);
 
 % Compute Moment of Inertia matrixs
-I = pt2D_moi(w_vec2, w_dot_vec);
+I = pt2D_moi(w_vec2, w_dot_vec)
 
 % I = [0.1739 0 0; 0 0.5931  0; 0 0 0.7861]; 
 [ q,w,a ] = pt2E_traj(th2(:, end-1), w_vec2(:, end-1), w_dot_vec(:, end-2),...
@@ -96,4 +103,4 @@ end
 
 % Uncomment to write txt file again
 com_traj = horzcat(com_pos,vertcat([1 0 0 0], th2'));
-dlmwrite('com_traj_lander.txt',com_traj,'delimiter',' ','precision',6)
+% dlmwrite('com_traj_lander.txt',com_traj,'delimiter',' ','precision',6)
