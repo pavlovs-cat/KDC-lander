@@ -29,15 +29,6 @@ pos_vec = extract_data(data_file, 'ml', n, 1:(Nsim+1));
 % Generate COMs & location for first 10 seconds
 [com, vel] = optim_com();
 
-% Uncomment to write txt file again
-% all_time = [0; init_times'];
-% com_traj = horzcat(all_time,zeros(length(all_time),3));
-% com_traj(1,2:4) = com;
-% for k = 2:length(all_time)
-%     com_traj(k,2:4) = com + vel*all_time(k,1);
-% end
-% dlmwrite('com_traj.txt',com_traj,'delimiter',' ','precision',6)
-
 % Store quaternions for each timestamp
 artifact_rot = zeros(Nsim, 4);
 Rots = cat(3, eye(3), zeros(3, 3, Nsim));
@@ -84,7 +75,7 @@ end
 w_dot_vec = pt2C_angacc(w_vec2, tau);
 
 % Compute Moment of Inertia matrixs
-%I = pt2D_moi(w_vec2, w_dot_vec);
+I2 = pt2D_moi(w_vec2, w_dot_vec);
 
 I = [0.1739 0 0; 0 0.5931  0; 0 0 0.7861]; 
 [ q,w,a ] = pt2E_traj(th2(:, end-1), w_vec2(:, end-1), w_dot_vec(:, end-2),...
@@ -94,3 +85,14 @@ if gen_plot == 1
     plot_results(w_sim(2, Nsim+1:Nsim+N), w(2, :), predict_times, 'w^p_x');
     plot_results(w_sim(3, Nsim+1:Nsim+N), w(3, :), predict_times, 'w^p_x');
 end
+
+% Uncomment to write txt file again
+vel2 = [0.05 0.02 0.01];
+all_time = [0; init_times'];
+com_traj = horzcat(all_time,zeros(length(all_time),3));
+com_traj(1,2:4) = com;
+for k = 2:length(all_time)
+    com_traj(k,2:4) = com + vel2*all_time(k,1);
+end
+com_traj = horzcat(com_traj,vertcat([1 0 0 0], th2'));
+% dlmwrite('com_traj.txt',com_traj,'delimiter',' ','precision',6)
