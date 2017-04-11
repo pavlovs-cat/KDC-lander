@@ -41,7 +41,7 @@ all_time = [0; init_times'];
 com_pos = horzcat(all_time,zeros(length(all_time),3));
 com_pos(1,2:4) = com;
 for k = 2:length(all_time)
-    com_pos(k,2:4) = com + (vel/100)*all_time(k,1);
+    com_pos(k,2:4) = com + vel*all_time(k,1);
 end
 
 % Store quaternions for each timestamp
@@ -52,8 +52,8 @@ th2 = horzcat([1 0 0 0]',zeros(4, Nsim));
 for j = 1:Nsim
     p = reshape(pos_vec(j, :), 3, 8);
     q = reshape(pos_vec(j+1, :), 3, 8);
-    artifact_rot(j,:) = pt2A_helper(p,q);
-    th2(:, j+1)  = quatmultiply(artifact_rot(j, :), th2(:, j)')';
+    rot = pt2A_helper(p,q);
+    th2(:, j+1) = quatmultiply(rot, th2(:, j)')';
 end
 
 % Do janky swap
@@ -68,7 +68,7 @@ th_sim =  extract_data(data_file, 'a_q', {'0', '1', '2', '3'}, 1 : Nsim+N)';
 % Plot  for orientation
 if gen_plot == 1
   plot_results(th_sim(1, 1:Nsim), th2(1, :), init_times, 'q_0');
-  plot_results(th_sim(2, 1:Nsinm), th2(2, :), init_times, 'q_1');
+  plot_results(th_sim(2, 1:Nsim), th2(2, :), init_times, 'q_1');
   plot_results(th_sim(3, 1:Nsim), th2(3, :), init_times, 'q_2');
   plot_results(th_sim(4, 1:Nsim), th2(4, :), init_times, 'q_3');
 end

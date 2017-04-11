@@ -26,7 +26,7 @@ d2;
 for i = 2:NF
  for j = 1:NM
   % last +1 to skip initial count variable
-  v = markers(i,(3*(j-1)+1+1):(3*(j-1)+3+1)) - com - vel*dt*markers(i,1);
+  v = markers(i,(3*(j-1)+1+1):(3*(j-1)+3+1)) - com - vel*markers(i,1);
   dist = v*v';
   score = score + (d2(j) - dist)*(d2(j) - dist);
  end
