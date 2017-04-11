@@ -92,7 +92,7 @@ w_dot_vec = pt2C_angacc(w_vec2, tau);
 % Compute Moment of Inertia matrixs
 I = pt2D_moi(w_vec2, w_dot_vec)
 
-% I = [0.1739 0 0; 0 0.5931  0; 0 0 0.7861]; 
+% I = [0.1739 0 0; 0 0.5931  0; 0 0 0.7861]; % In WORLD frame
 [ q,w,a ] = pt2E_traj(th2(:, end-1), w_vec2(:, end-1), w_dot_vec(:, end-2),...
                       I, tau, N);
 if gen_plot == 1
