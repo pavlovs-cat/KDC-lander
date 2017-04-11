@@ -28,12 +28,13 @@ pos_vec = extract_data(data_file, 'ml', n, 1:(Nsim+1));
 
 % Generate COMs & location for first 10 seconds
 [com, vel] = optim_com();
-vel2 = [0.05 0.02 0.01];    %%% FIX OUR IMPLEMENTATION
+% COM velocity in the world frame, checked using mrdplot
+% vel_w = [0.05 0.02 0.01];
 all_time = [0; init_times'];
 com_pos = horzcat(all_time,zeros(length(all_time),3));
 com_pos(1,2:4) = com;
 for k = 2:length(all_time)
-    com_pos(k,2:4) = com + vel2*all_time(k,1);
+    com_pos(k,2:4) = com + (vel/100)*all_time(k,1);
 end
 
 % Store quaternions for each timestamp
@@ -95,4 +96,4 @@ end
 
 % Uncomment to write txt file again
 com_traj = horzcat(com_pos,vertcat([1 0 0 0], th2'));
-% dlmwrite('com_traj.txt',com_traj,'delimiter',' ','precision',6)
+dlmwrite('com_traj_lander.txt',com_traj,'delimiter',' ','precision',6)
