@@ -75,9 +75,9 @@ typedef struct {
   double alien_q[N_Q]; // quaternion giving alien orientation
   double alien_q_last[N_Q]; // quaternion giving alien orientation
   double alien_q_norm; // quaternion length
-  double lander_x[N_XYZ]; // location of lander craft
-  double lander_q[N_Q]; // quaternion giving spacecraft orientation
-  double lander_q_last[N_Q]; // quaternion giving spacecraft orientation
+  double lander_x[N_XYZ]; // location of lander craft (in world frame?)
+  double lander_q[N_Q]; // quaternion giving spacecraft orientation (in world frame?)
+  double lander_q_last[N_Q]; // quaternion giving spacecraft orientation (in world frame?)
   double lander_q_norm; // quaternion length
 
   // rotation matrices
@@ -109,9 +109,9 @@ typedef struct {
 
   // markers
   int n_markers;
-  double markers_alien[MAX_N_MARKERS][N_XYZ];
-  double markers_world[MAX_N_MARKERS][N_XYZ];
-  double markers_lander[MAX_N_MARKERS][N_XYZ];
+  double markers_alien[MAX_N_MARKERS][N_XYZ]; //markers in alien frame
+  double markers_world[MAX_N_MARKERS][N_XYZ]; //markers in world frame
+  double markers_lander[MAX_N_MARKERS][N_XYZ]; //markers in ??? frame
   double markers_noisy[MAX_N_MARKERS][N_XYZ];
   double uniform_noise_min;
   double uniform_noise_max;
@@ -173,6 +173,8 @@ typedef struct {
   // Make this thread safe: random number generator seed for rand_r() and rand()
   int rand_seed;
   double rand_scale;
+
+  //char com_traj[10000][N_XYZ+1]; // uhhhh
 
 } SIM;
 
