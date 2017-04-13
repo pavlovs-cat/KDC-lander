@@ -41,8 +41,8 @@ void init_controller( SIM *s )
     com_traj[i][j] = val;
 	}
    // this is just to make sure the file is actually getting read
-	if (i%100 == 0)
-		printf("%g, %g, %g, %g\n", com_traj[i][0], com_traj[i][1], 			com_traj[i][2], com_traj[i][3]);
+//	if (i%100 == 0)
+//		printf("%g, %g, %g, %g\n", com_traj[i][0], com_traj[i][1], 			com_traj[i][2], com_traj[i][3]);
   }
   fclose(file);
 }
@@ -161,6 +161,17 @@ int controller( SIM *s )
       s->lander_torque[i] = -5.0;
   */}
   multiply_m3_v3( s->lander_r, s->lander_torque, s->lander_torque_world );
+
+//writing output to file
+FILE *datfile;
+datfile = fopen("problem2_3.txt", "ab+");
+//uncomment below for desired trajectory
+//fprintf(datfile, "%g %g %g %g %g %g %g %g\n", count, s->lander_x_d[XX], s->lander_x_d[YY], s->lander_x_d[ZZ], s->lander_q_d[Q0], s->lander_q_d[Q1], s->lander_q_d[Q2], s->lander_q_d[Q3]);
+//uncomment below for actual trajectory
+fprintf(datfile, "%g %g %g %g %g %g %g %g\n", count, s->lander_x[XX], s->lander_x[YY], s->lander_x[ZZ], s->lander_q[Q0], s->lander_q[Q1], s->lander_q[Q2], s->lander_q[Q3]);
+fclose(datfile);
+
+
 
   return 0;
 }
