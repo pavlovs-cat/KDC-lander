@@ -117,10 +117,10 @@ double normalize_q( double *q_in, double *q_out )
   length = sqrt( length_2 );
   scale = 1.0/length;
   if ( q_out != NULL )
-    {
-      for ( i = 0; i < 4; i++ )
-	q_out[i] = scale*q_in[i];
-    }
+  {
+    for ( i = 0; i < 4; i++ )
+      q_out[i] = scale*q_in[i];
+  }
   return length;
 }
 
@@ -174,5 +174,41 @@ void q_to_rotvec( double *q, double *rotvec )
     }
 }
 
+/************************************************/
+// Create a 3 vector that is the axis of rotation times the angle
+void vec_diff_to_quat(double * v1, double * v2, double * q)
+{
+  // Compute dotproduct
+  double dot = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+  
+   
+  const double EPSILON = 1e-4;
+  // Check for parallel vectors
+  if (dot > 1 - EPSILON){
+    q[0] = 1; q[1] = 0; q[2]  = 0; q[3] = 0;
+    return;
+  }
+  else if(dot < -1 + EPSILON){
+    q[0] = 0; q[1] = 0; q[2]  = 0; q[3] = 1;
+    return;
+  }
+
+  // Non degenerate case
+  cross_product_v3(v1, v2, q+1);
+  q[0] = sqrt( sq_len(v1) * sq_len(v2) ) + dot;
+  if(q[0]  < EPSILON && q[1] < EPSILON && 
+     q[2]  < EPSILON && q[3] < EPSILON){
+    q[0] = 1; q[1] = 0; q[2]  = 0; q[3] = 0;
+    return;
+  }   
+
+  normalize_q(q, q);
+}
+
+
+double sq_len(double * v)
+{
+  return v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
+}
 /************************************************/
 /************************************************/

@@ -10,3 +10,5 @@ double normalize_q( double *q_in, double *q_out );
 void q_to_r( double *q, double r[3][3] );
 void compose_q( double *q, double *p, double *result );
 void q_to_rotvec( double *q, double *rotvec );
+void vec_diff_to_quat(double * v1, double * v2, double * q);
+double sq_len(double * v);

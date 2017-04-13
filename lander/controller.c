@@ -14,7 +14,10 @@
 #include "sdfast/alien.h"
 #include "sdfast/lander.h"
 
-float com_traj[10001][4]; // array to store predicted COM values in, 1st column is time step, then x,y,z
+#define N_INIT  1000000000
+#define N_TRACK 500
+
+double com_traj[10001][8]; // array to store predicted COM values in, 1st column is time step, then x,y,z
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
@@ -26,14 +29,17 @@ void init_controller( SIM *s )
 {
 // read in file of predicted alien object COM locations. I'm sorry.
   FILE *file;
+  printf("Reading input file");
   file = fopen("com_traj.txt", "r");
   int i = 0;
   int j = 0;
   for(i=0;i<10001;i++)
   {
-	for(j=0;j<4;j++)
+	for(j=0;j<8;j++)
 	{
-    int ret =  fscanf(file, "%g", &com_traj[i][j]);
+    float val;
+    int ret =  fscanf(file, "%g", &val);
+    com_traj[i][j] = val;
 	}
    // this is just to make sure the file is actually getting read
 //	if (i%1000 == 0)
@@ -58,124 +64,99 @@ void reinit_controller( SIM *s )
 
 int controller( SIM *s )
 {
-  int i;
+
   static int count = 0;
-  double k_x = 1.0;
-  double b_x = 2.0;
-  double k_r = 1.0;
-  double b_r = 2.0;
+  // Do nothing during initial monitoring period
+  //if (count++ < N_INIT)
+  //  return 0;
+
+  int i, j;
+  double k_x = 3.0;
+  double b_x = 1.0;
+  double k_r = 0.4;
+  double b_r = 0.2;
   double q_minus[N_Q];
   double q_diff[N_Q];
+  double alien_norm[3];
+  double lander_norm[3];
 
-  count++;
+  if (count < N_TRACK + N_INIT){
+    
+    // Convert orientaiton to rotation matrix
+    double R[3][3];
+    q_to_r(com_traj[N_TRACK]+4, R);
 
-  /*
-  // Handy for generating a data file for Matlab
-  if ( count % 1000 == 0 )
+    // Compute required orientation
+    double neg_body_norm[] = {-1, 0, 0};
+    multiply_m3_v3(R, neg_body_norm, alien_norm);
+  
+    // Compute tracking position
+    double body_track_pos[] = {5, 0, 0};
+    double world_track_pos[3];
+    multiply_m3_v3(R, world_track_pos, world_track_pos);
+    for (i = 0; i < 3; i++)
+      s->lander_x_d[i] = com_traj[count][i+1] + world_track_pos[i];    
+  }
+  else
+  {
+    //convert markers_lander (markers in lander frame) to world frame
+    //by applying appropriate transformation:
+    double markers_world[s->n_markers][N_XYZ];
+    for (i=0; i<s->n_markers; i++)
     {
-      printf( "%d ", count );
-      for( i = 0; i < s->n_markers; i++ )
-	{
-	  printf( "%20.15f %20.15f %20.15f ", s->markers_lander[i][0],
-		  s->markers_lander[i][1], s->markers_lander[i][2] );
-	}
-      printf( "\n" );
+      double markers_temp[N_XYZ];
+      double r_lander_world[3][3];
+      q_to_r(s->lander_q, r_lander_world);    
+      multiply_m3_v3(r_lander_world, s->markers_lander[i], markers_temp);     
+      subtract_v3(markers_temp, s->lander_x, markers_world[i]);
     }
-  */
 
-//convert markers_lander (markers in lander frame) to world frame by 
-//subtracting lander location from marker coordinates 
-double markers_world_calc[s->n_markers][N_XYZ];
-for (i=0; i<s->n_markers; i++)
-{
-subtract_v3(&(s->markers_lander[i][0]), s->lander_x, *markers_world_calc);
-	int j;
-	/*if (count % 1000 ==0)
-	{	
-		for (j=0; j<N_XYZ; j++)
-		{
-		//printf(" %lf ", markers_world_calc[i][j]);
-		}
-		//printf("\n");
-	}	*/
-}
+    // Compute face vectors
+    double face7_5[N_XYZ], face5_4[N_XYZ];
+    subtract_v3(markers_world[5], markers_world[7], face7_5);
+    subtract_v3(markers_world[4], markers_world[5], face5_4);
 
+    // Compute target normal
+    cross_product_v3(face5_4, face7_5, alien_norm);
 
-int t_mid = 50; // point to switch from aiming at point to matching alien trajectory
-double sf = 1.00; //scaling factor to account for everything being wrong
+    // Compute target face centroid
+    for (i = 0; i < 3; i++){
+      s->lander_x_d[i] = 0;
+      for (j = 4; j < 8; j++)
+        s->lander_x_d[i] += markers_world[j][i];
+      
+      s->lander_x_d[i] /=  4.0;
+    }
+  } 
 
-
-if (count <= t_mid)
-{
-
-  // desired lander position
-  s->lander_x_d[XX] = com_traj[t_mid][XX+1]/sf + 5;
-  s->lander_x_d[YY] = com_traj[t_mid][YY+1]/sf + 5;
-  s->lander_x_d[ZZ] = com_traj[t_mid][ZZ+1]/sf + 5;
-
-  // desired lander orientation
-
-  s->lander_q_d[Q0] = com_traj[t_mid][4];
-  s->lander_q_d[Q1] = com_traj[t_mid][5];
-  s->lander_q_d[Q2] = com_traj[t_mid][6];
-  s->lander_q_d[Q3] = com_traj[t_mid][7];
-}
-else
-{
-
-  // desired lander position
-
-  s->lander_x_d[XX] = com_traj[count][XX+1]/sf;
-  s->lander_x_d[YY] = com_traj[count][YY+1]/sf;
-  s->lander_x_d[ZZ] = com_traj[count][ZZ+1]/sf;
-
-  // desired lander orientation
-//use these when we have the final quaternions...
-  s->lander_q_d[Q0] = com_traj[count][4];
-  s->lander_q_d[Q1] = com_traj[count][5];
-  s->lander_q_d[Q2] = com_traj[count][6];
-  s->lander_q_d[Q3] = com_traj[count][7];
-
- // given values
-/*
-  s->lander_q_d[Q0] = 0.70710678118655;
-  s->lander_q_d[Q1] = 0.0;
-  s->lander_q_d[Q2] = 0.0;
-  s->lander_q_d[Q3] = 0.70710678118655;
-*/
-
-
-}
   // lander translational control (PD servo)
   for ( i = 0; i < 3; i++ )
-    {
-      s->lander_thrust_world[i] = 
-	k_x*( s->lander_x_d[i] - s->lander_x[i] ) +
-	b_x*( - s->lander_xd[i] );
-    }
+  {
+    s->lander_thrust_world[i] = 
+      k_x*( s->lander_x_d[i] - s->lander_x[i] ) +
+      b_x*( -s->lander_xd[i] );
+  }
   multiply_transpose_m3_v3( s->lander_r, s->lander_thrust_world, 
-			    s->lander_thrust );
+                            s->lander_thrust );
 
-  // lander orientation control
-  // Attempt to do PD control, but orientations not vectors, so complicated
-  // "subtract quaternions"
-  invert_q( s->lander_q, q_minus );
-  compose_q( q_minus, s->lander_q_d, q_diff );
+  // Create difference quaternion from normals
+  vec_diff_to_quat(alien_norm, lander_norm, q_diff); 
   q_to_rotvec( q_diff, s->rotvec ); 
-  // printf( "%g %g %g %g\n", q_diff[0], q_diff[1], q_diff[2], q_diff[3] );
-  // printf( "%g %g %g\n", s->rotvec[0], s->rotvec[1], s->rotvec[2] );
 
   // PD servo for orientation
   // w and rotvec are in body coordinates.
   for ( i = 0; i < N_XYZ; i++ )
-    {
-      s->lander_torque[i] = k_r*s->rotvec[i] - b_r*s->lander_w[i];
-    }
+    s->lander_torque[i] = -k_r*s->rotvec[i] - b_r*(s->lander_w[i]);
+  
   multiply_m3_v3( s->lander_r, s->lander_torque, s->lander_torque_world );
-
-  // To get better control should compute desired acceleration and use
-  // inverse dynamics to compute torque.
-
+  if (count % 1000)
+  {
+    printf("an: %f %f %f ln: %f %f %f qd %f %f %f %f rv: %f %f %f\n", alien_norm[0], 
+           alien_norm[1], alien_norm[2], lander_norm[0],
+           lander_norm[1], lander_norm[2], q_diff[0], q_diff[1],
+           q_diff[2], q_diff[3], s->rotvec[0], s->rotvec[1], s->rotvec[2]);
+  }
+  
   return 0;
 }
 
