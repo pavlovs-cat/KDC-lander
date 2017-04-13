@@ -14,6 +14,7 @@
 #include "sdfast/alien.h"
 #include "sdfast/lander.h"
 
+float com_traj[10001][4]; // array to store predicted COM values in, 1st column is time step, then x,y,z
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
@@ -23,6 +24,24 @@
 
 void init_controller( SIM *s )
 {
+// read in file of predicted alien object COM locations. I'm sorry.
+  FILE *file;
+  file = fopen("com_traj.txt", "r");
+  int i = 0;
+  int j = 0;
+  for(i=0;i<10001;i++)
+  {
+	for(j=0;j<4;j++)
+	{
+    int ret =  fscanf(file, "%g", &com_traj[i][j]);
+	}
+   // this is just to make sure the file is actually getting read
+//	if (i%1000 == 0)
+//		printf("%g, %g, %g, %g\n", com_traj[i][0], com_traj[i][1], 			com_traj[i][2], com_traj[i][3]);
+  
+	
+  }
+  fclose(file);
 }
 
 /*****************************************************************************/
@@ -71,35 +90,16 @@ for (i=0; i<s->n_markers; i++)
 {
 subtract_v3(&(s->markers_lander[i][0]), s->lander_x, *markers_world_calc);
 	int j;
-	if (count % 1000 ==0)
+	/*if (count % 1000 ==0)
 	{	
 		for (j=0; j<N_XYZ; j++)
 		{
 		//printf(" %lf ", markers_world_calc[i][j]);
 		}
 		//printf("\n");
-	}	
+	}	*/
 }
 
-// read in file of predicted alien object COM locations. I'm sorry.
-  FILE *file;
-  file = fopen("com_traj.txt", "r");
-  i = 0;
-  int j = 0;
-  float com_traj[10001][4]; // array to store predicted COM values in, 1st column is time step, then x,y,z
-  for(i=0;i<10001;i++)
-  {
-	for(j=0;j<4;j++)
-	{
-		fscanf(file, "%g", &com_traj[i][j]);
-	}
-   // this is just to make sure the file is actually getting read
-//	if (i%1000 == 0)
-//		printf("%g, %g, %g, %g\n", com_traj[i][0], com_traj[i][1], 			com_traj[i][2], com_traj[i][3]);
-  
-	
-  }
-  fclose(file);
 
 int t_mid = 500; // point to switch from aiming at point to matching alien trajectory
 double sf = 1.00; //scaling factor to account for everything being wrong
