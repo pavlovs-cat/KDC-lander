@@ -113,16 +113,6 @@ int controller( SIM *s )
     subtract_v3(markers_world[5], markers_world[7], face7_5);
     subtract_v3(markers_world[4], markers_world[5], face5_4);
 
-    if (count%2000 == -1){
-      for (i=0; i<s->n_markers; i++)
-        printf(" [%f %f %f] ", markers_world[i][0], markers_world[i][1], markers_world[i][2]);
-
-      printf("\nf57 = %f %f %f, f54 = %f %f %f\n", face7_5[0], face7_5[1], face7_5[2],
-             face5_4[0], face5_4[1], face5_4[2]);
-
-
-    }
-
     // Compute target normal
     cross_product_v3(face5_4, face7_5, alien_norm);
 
@@ -171,16 +161,6 @@ int controller( SIM *s )
       s->lander_torque[i] = -5.0;
   }
   multiply_m3_v3( s->lander_r, s->lander_torque, s->lander_torque_world );
-  if (count == N_INIT + N_TRACK || count == N_INIT + N_TRACK - 1)
-  {
-    printf("\nan: %f %f %f ln: %f %f %f qd %f %f %f %f rv: %f %f %f t: %f %f %f\n", alien_norm[0],
-           alien_norm[1], alien_norm[2], lander_norm[0],
-           lander_norm[1], lander_norm[2], q_diff[0], q_diff[1],
-           q_diff[2], q_diff[3], s->rotvec[0], s->rotvec[1], s->rotvec[2],
-           s->lander_torque[0], s->lander_torque[1], s->lander_torque[2]);
-    printf("w: %f %f %f\n", s->lander_w[0], s->lander_w[1], s->lander_w[2]);
-
-   }
 
   return 0;
 }
