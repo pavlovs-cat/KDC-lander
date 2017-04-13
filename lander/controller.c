@@ -41,8 +41,8 @@ void init_controller( SIM *s )
     com_traj[i][j] = val;
 	}
    // this is just to make sure the file is actually getting read
-//	if (i%1000 == 0)
-//		printf("%g, %g, %g, %g\n", com_traj[i][0], com_traj[i][1], 			com_traj[i][2], com_traj[i][3]);
+	if (i%100 == 0)
+		printf("%g, %g, %g, %g\n", com_traj[i][0], com_traj[i][1], 			com_traj[i][2], com_traj[i][3]);
   }
   fclose(file);
 }
@@ -155,11 +155,11 @@ int controller( SIM *s )
   // w and rotvec are in body coordinates.
   for ( i = 0; i < N_XYZ; i++ ){
     s->lander_torque[i] = -k_r*s->rotvec[i] - b_r*(s->lander_w[i]);
-    if (s->lander_torque[i] > 5.0)
+/*    if (s->lander_torque[i] > 5.0)
       s->lander_torque[i] = 5.0;
     else if (s->lander_torque[i] < -5.0)
       s->lander_torque[i] = -5.0;
-  }
+  */}
   multiply_m3_v3( s->lander_r, s->lander_torque, s->lander_torque_world );
 
   return 0;
