@@ -1,5 +1,5 @@
 /******************************************************************/
-/* 
+/*
 Defines, typedefs, and structs
 */
 /******************************************************************/
@@ -63,12 +63,12 @@ typedef struct {
 
   // *** COMMON VARIABLES ACROSS ALL SIMULATIONS
 
-  double time_step; // controller time step    
+  double time_step; // controller time step
   double time;      // current time in simulation
   double alien_time;
   double lander_time;
   double duration;   // simulation duration
-  int status;       // Are we CRASHED? 
+  int status;       // Are we CRASHED?
 
   // Joint angles
   double alien_x[N_XYZ]; // location of alien
@@ -173,6 +173,10 @@ typedef struct {
   // Make this thread safe: random number generator seed for rand_r() and rand()
   int rand_seed;
   double rand_scale;
+
+
+  double alien_norm[3];
+  double lander_norm[3];
 
   //char com_traj[10000][N_XYZ+1]; // uhhhh
 

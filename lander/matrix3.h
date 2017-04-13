@@ -1,4 +1,5 @@
 void subtract_v3( double *v1, double *v2, double *v_out );
+void add_v3( double *v1, double *v2, double *v_out );
 void cross_product_v3( double *v1, double *v2, double *v_out );
 
 void multiply_m3_v3( double r[3][3], double *v_in, double *v_out );
@@ -12,3 +13,4 @@ void compose_q( double *q, double *p, double *result );
 void q_to_rotvec( double *q, double *rotvec );
 void vec_diff_to_quat(double * v1, double * v2, double * q);
 double sq_len(double * v);
+double normalize_v(double * v_in, double * v_out);

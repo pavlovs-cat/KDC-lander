@@ -41,7 +41,7 @@ SIM sim;
 
 /************************************************************************/
 /************************************************************************/
-// reverse order from sdfast's quaternion to q that starts with cos() term    
+// reverse order from sdfast's quaternion to q that starts with cos() term
 
 void to_sdfast_q( double *q_src, double *q_dst )
 {
@@ -122,13 +122,13 @@ static void forward_kinematics( SIM *s )
   if ( s->alien_state_called )
     {
       offset[XX] = 1.0;
-      alien_pos( ALIEN_BODY, offset, s->a_x_axis );    
+      alien_pos( ALIEN_BODY, offset, s->a_x_axis );
       offset[XX] = 0.0;
       offset[YY] = 1.0;
-      alien_pos( ALIEN_BODY, offset, s->a_y_axis );    
+      alien_pos( ALIEN_BODY, offset, s->a_y_axis );
       offset[YY] = 0.0;
       offset[ZZ] = 1.0;
-      alien_pos( ALIEN_BODY, offset, s->a_z_axis );    
+      alien_pos( ALIEN_BODY, offset, s->a_z_axis );
       offset[ZZ] = 0.0;
     }
 
@@ -152,13 +152,13 @@ static void forward_kinematics( SIM *s )
   if ( s->lander_state_called )
     {
       offset[XX] = 1.0;
-      lander_pos( LANDER_BODY, offset, s->l_x_axis );    
+      lander_pos( LANDER_BODY, offset, s->l_x_axis );
       offset[XX] = 0.0;
       offset[YY] = 1.0;
-      lander_pos( LANDER_BODY, offset, s->l_y_axis );    
+      lander_pos( LANDER_BODY, offset, s->l_y_axis );
       offset[YY] = 0.0;
       offset[ZZ] = 1.0;
-      lander_pos( LANDER_BODY, offset, s->l_z_axis );    
+      lander_pos( LANDER_BODY, offset, s->l_z_axis );
       offset[ZZ] = 0.0;
     }
 
@@ -188,16 +188,16 @@ static void forward_kinematics( SIM *s )
   // THIS IS THE MEASUREMENT PROCESS AND THE CONVERSION TO LANDER COORDINATES
   for( i = 0; i < N_XYZ; i++ )
     tmp[i] = -s->alien_com[i];
-  alien_pos( ALIEN_BODY, tmp, s->marker_zero );    
+  alien_pos( ALIEN_BODY, tmp, s->marker_zero );
   for( i = 0; i < s->n_markers; i++ )
     {
       alien_pos( ALIEN_BODY, &(s->markers_alien[i][0]),
-		 &(s->markers_world[i][0]) );    
+		 &(s->markers_world[i][0]) );
       subtract_v3( &(s->markers_world[i][0]), s->lander_x, tmp );
       multiply_transpose_m3_v3( s->lander_r, tmp, &(s->markers_lander[i][0]) );
       for ( j = XX; j <= ZZ; j++ )
 	{
-	  s->markers_noisy[i][j] 
+	  s->markers_noisy[i][j]
 	    = s->markers_lander[i][j] + s->uniform_noise_min
 	    + rand()*(s->uniform_noise_max - s->uniform_noise_min)/RAND_MAX;
 	}
@@ -222,7 +222,7 @@ void set_alien_sdfast_state( SIM *s, double *sdfast_state )
     }
 
   for( i = 0, j = ALIEN_NQ; i < ALIEN_NU; i++, j++ )
-    { 
+    {
       s->alien_sdfast_stated[i] = s->alien_sdfast_state[j];
     }
 
@@ -249,7 +249,7 @@ void set_lander_sdfast_state( SIM *s, double *sdfast_state )
     }
 
   for( i = 0, j = LANDER_NQ; i < LANDER_NU; i++, j++ )
-    { 
+    {
       s->lander_sdfast_stated[i] = s->lander_sdfast_state[j];
     }
 
@@ -273,7 +273,7 @@ void init_dynamics( SIM *s )
 
   if ( ALIEN_NQU > MAX_N_SDFAST_STATE )
     {
-      fprintf( stderr, 
+      fprintf( stderr,
 	       "Need to increast MAX_N_SDFAST_STATE (%d) to be at least %d\n",
 	       MAX_N_SDFAST_STATE, ALIEN_NQU );
       exit( -1 );
@@ -281,7 +281,7 @@ void init_dynamics( SIM *s )
 
   if ( LANDER_NQU > MAX_N_SDFAST_STATE )
     {
-      fprintf( stderr, 
+      fprintf( stderr,
 	       "Need to increast MAX_N_SDFAST_STATE (%d) to be at least %d\n",
 	       MAX_N_SDFAST_STATE, LANDER_NQU );
       exit( -1 );
@@ -297,9 +297,9 @@ void init_dynamics( SIM *s )
   lander_init(); /* initialize SDFAST model */
 
   alien_stab( 2.0*s->sdfast_baumgarte,
-		  s->sdfast_baumgarte*s->sdfast_baumgarte ); 
+		  s->sdfast_baumgarte*s->sdfast_baumgarte );
   lander_stab( 2.0*s->sdfast_baumgarte,
-		  s->sdfast_baumgarte*s->sdfast_baumgarte ); 
+		  s->sdfast_baumgarte*s->sdfast_baumgarte );
 
   for( i = 0; i < ALIEN_NQU; i++ )
     s->alien_sdfast_state[i] = 0;
@@ -346,6 +346,7 @@ void reinit_dynamics( SIM *s )
   sdfast_state[ALIEN_WX] = 0.3/3;
   sdfast_state[ALIEN_WY] = 1.0/3;
   sdfast_state[ALIEN_WZ] = 0.1/3;
+
 
   set_alien_sdfast_state( s, sdfast_state );
 
@@ -401,9 +402,9 @@ void reinit_dynamics( SIM *s )
 /* This is what is called on each integration step */
 
 void integrate_one_time_step( SIM *s )
-{ 
+{
   int i, step;
-  int err; 
+  int err;
     /* { OK, DERIVATIVE_DISCONTINUITY, SYSTEM_LOCKED, CONSTRAINTS_ERR } */
   double errest;
   int is_bad_number = 0;
@@ -419,7 +420,7 @@ void integrate_one_time_step( SIM *s )
   alien_clearerr();
   lander_clearerr();
 
-  // keep track of old quaternions. 
+  // keep track of old quaternions.
   for ( i = 0; i < 4; i++ )
     {
       s->alien_q_last[i] = s->alien_q[i];
@@ -442,7 +443,7 @@ void integrate_one_time_step( SIM *s )
 
       for( i = 0; i < ALIEN_NQ; i++ )
 	{ // isfinite() should have worked.
-	  if ( isnan( s->alien_sdfast_state[i] ) 
+	  if ( isnan( s->alien_sdfast_state[i] )
 	       || isinf( s->alien_sdfast_state[i]) )
 	    {
 	      is_bad_number = 1;
@@ -453,8 +454,8 @@ void integrate_one_time_step( SIM *s )
 
       for( i = 0; i < ALIEN_NU; i++ )
 	{ // isfinite() should have worked.
-	  if ( isnan( s->alien_sdfast_stated[i+ALIEN_NQ] ) 
-	       || isinf( s->alien_sdfast_stated[i+ALIEN_NQ]) ) 
+	  if ( isnan( s->alien_sdfast_stated[i+ALIEN_NQ] )
+	       || isinf( s->alien_sdfast_stated[i+ALIEN_NQ]) )
 	    {
 	      is_bad_number = 1;
 	      fprintf( stderr, "Nan detected.\n" );
@@ -464,7 +465,7 @@ void integrate_one_time_step( SIM *s )
 
        for( i = 0; i < LANDER_NQ; i++ )
 	{ // isfinite() should have worked.
-	  if ( isnan( s->lander_sdfast_state[i] ) 
+	  if ( isnan( s->lander_sdfast_state[i] )
 	       || isinf( s->lander_sdfast_state[i]) )
 	    {
 	      is_bad_number = 1;
@@ -475,8 +476,8 @@ void integrate_one_time_step( SIM *s )
 
       for( i = 0; i < LANDER_NU; i++ )
 	{ // isfinite() should have worked.
-	  if ( isnan( s->lander_sdfast_stated[i+LANDER_NQ] ) 
-	       || isinf( s->lander_sdfast_stated[i+LANDER_NQ]) ) 
+	  if ( isnan( s->lander_sdfast_stated[i+LANDER_NQ] )
+	       || isinf( s->lander_sdfast_stated[i+LANDER_NQ]) )
 	    {
 	      is_bad_number = 1;
 	      fprintf( stderr, "Nan detected.\n" );

@@ -103,7 +103,7 @@ double lookup_value( MRDPLOT_DATA *d, int point, int channel )
 static void start()
 {
   // set up view point
-  static float xyz[3] = {2.5f,3.5f,17.0f};
+  static float xyz[3] = {-1.0f,6.0f,30.0f};
   static float hpr[3] = {-90.0000f,-90.0000f,0.0000f};
   dsSetViewpoint (xyz,hpr);
 }
@@ -246,6 +246,33 @@ static void display (int pause)
   dsSetColor (1,1,1);
   dsDrawSphere( marker_center, alien_R, 0.2 );
 
+  // Plot target vectors
+  /*float I[12];
+  I[0] = I[5] = I[10] = 1;
+  float end1[3], lander_x_d[3], lander_x[3];
+  for (i=0; i < 3; i++){
+    end1[i] = sim.lander_x_d[i] + sim.alien_norm[i];
+    lander_x_d[i] = sim.lander_x_d[i];
+  }
+  dsSetTexture (DS_WOOD);
+  dsSetColor (1,0,1);
+  dsDrawSphere( end1, I, 0.75 );
+  dsSetTexture (DS_WOOD);
+  dsSetColor (1,0,1);
+  dsDrawSphere( lander_x_d, I, 0.75);
+
+  float end2[3];
+  for (i=0; i < 3; i++){
+    end2[i] = sim.lander_x[i] + sim.lander_norm[i];
+    lander_x[i] = sim.lander_x[i];
+  }
+  dsSetTexture (DS_WOOD);
+  dsSetColor (0,0,1);
+  dsDrawSphere( end2, I, 0.75);
+  dsSetTexture (DS_WOOD);
+  dsSetColor (0,0,1);
+  dsDrawSphere( lander_x, I, 0.75);
+*/
   /* Delay */
 #ifdef WIN32
   for( f = 0.0; f < 7000000.0; f += 1.0 )
@@ -268,13 +295,13 @@ int main (int argc, char **argv)
 {
   char *filename;
   int i;
-  dsFunctions fn; 
+  dsFunctions fn;
 
   if ( argc > 1 )
     filename = strdup( argv[1] );
   else
     filename = last_data();
-  
+
   printf( "Reading: %s\n", filename );
 
   d = read_mrdplot( filename );
@@ -341,11 +368,11 @@ int main (int argc, char **argv)
     printf( "%d %d\n", i, channels[i] );
 
   // setup pointers to drawstuff callback functions
-  fn.version = DS_VERSION; 
-  fn.start = &start; 
-  fn.step = &display; 
-  fn.command = &command; 
-  fn.stop = 0; 
+  fn.version = DS_VERSION;
+  fn.start = &start;
+  fn.step = &display;
+  fn.command = &command;
+  fn.stop = 0;
 #ifdef WIN32
   fn.path_to_textures = "C:/cga/kdc/walk02/useful/drawstuff-windows/textures";
 #else
@@ -354,7 +381,7 @@ int main (int argc, char **argv)
 
   // do display
   dsSimulationLoop( argc, argv, /* command line arguments */
-                    500, 500, /* window size */
+                    1000, 1000, /* window size */
                     &fn ); /* callback info */
 
   return 0;

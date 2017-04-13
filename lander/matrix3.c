@@ -20,6 +20,16 @@ void subtract_v3( double *v1, double *v2, double *v_out )
     }
 }
 
+void add_v3( double *v1, double *v2, double *v_out )
+{
+  int i;
+
+  for ( i = 0; i < 3; i++ )
+    {
+      v_out[i] = v1[i] + v2[i];
+    }
+}
+
 /************************************************/
 
 void cross_product_v3( double *v1, double *v2, double *v_out )
@@ -65,12 +75,12 @@ void invert_m3( double m[3][3], double result[3][3] )
 {
   double one_over_determinant;
 
-  one_over_determinant = 1/(- m[0][2]*m[1][1]*m[2][0] + m[0][1]*m[1][2]*m[2][0] 
+  one_over_determinant = 1/(- m[0][2]*m[1][1]*m[2][0] + m[0][1]*m[1][2]*m[2][0]
 			    + m[0][2]*m[1][0]*m[2][1] - m[0][0]*m[1][2]*m[2][1]
 			    - m[0][1]*m[1][0]*m[2][2] + m[0][0]*m[1][1]*m[2][2]);
   result[0][0] = (- m[1][2]*m[2][1] + m[1][1]*m[2][2])*one_over_determinant;
   result[0][1] = (m[0][2]*m[2][1] - m[0][1]*m[2][2])*one_over_determinant;
-  result[0][2] = (- m[0][2]*m[1][1] + m[0][1]*m[1][2])*one_over_determinant; 
+  result[0][2] = (- m[0][2]*m[1][1] + m[0][1]*m[1][2])*one_over_determinant;
   result[1][0] = (m[1][2]*m[2][0] - m[1][0]*m[2][2])*one_over_determinant;
   result[1][1] = (- m[0][2]*m[2][0] + m[0][0]*m[2][2])*one_over_determinant;
   result[1][2] = (m[0][2]*m[1][0] - m[0][0]*m[1][2])*one_over_determinant;
@@ -179,10 +189,16 @@ void q_to_rotvec( double *q, double *rotvec )
 void vec_diff_to_quat(double * v1, double * v2, double * q)
 {
   // Compute dotproduct
-  double dot = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
-  
-   
-  const double EPSILON = 1e-4;
+  const double EPSILON = 1e-3;
+  double v1n[2], v2n[3];
+  double l1 = normalize_v(v1, v1n);
+  double l2 = normalize_v(v2, v2n);
+  if (l1 < EPSILON || l2 < EPSILON){
+    q[0] = 1; q[1] = 0; q[2]  = 0; q[3] = 0;
+    return;
+  }
+  double dot = v1n[0]*v2n[0] + v1n[1]*v2n[1] + v1n[2]*v2n[2];
+
   // Check for parallel vectors
   if (dot > 1 - EPSILON){
     q[0] = 1; q[1] = 0; q[2]  = 0; q[3] = 0;
@@ -195,16 +211,29 @@ void vec_diff_to_quat(double * v1, double * v2, double * q)
 
   // Non degenerate case
   cross_product_v3(v1, v2, q+1);
-  q[0] = sqrt( sq_len(v1) * sq_len(v2) ) + dot;
-  if(q[0]  < EPSILON && q[1] < EPSILON && 
+  q[0] = 1.0 + dot;
+  if(q[0]  < EPSILON && q[1] < EPSILON &&
      q[2]  < EPSILON && q[3] < EPSILON){
     q[0] = 1; q[1] = 0; q[2]  = 0; q[3] = 0;
     return;
-  }   
+  }
 
   normalize_q(q, q);
 }
 
+double normalize_v(double * v_in, double * v_out)
+{
+  double l = sq_len(v_in);
+  if (l < 1e-8){
+    v_out = v_in;
+    return 0.;
+  }
+  int i;
+  for (i=0; i < 3; i++)
+    v_out[i] = v_in[i]/l;
+
+  return l;
+}
 
 double sq_len(double * v)
 {
