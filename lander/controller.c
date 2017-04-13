@@ -101,7 +101,7 @@ subtract_v3(&(s->markers_lander[i][0]), s->lander_x, *markers_world_calc);
   }
   fclose(file);
 
-int t_mid = 50; // point to switch from aiming at point to matching alien trajectory
+int t_mid = 500; // point to switch from aiming at point to matching alien trajectory
 double sf = 1.00; //scaling factor to account for everything being wrong
 
 
@@ -175,6 +175,12 @@ else
 
   // To get better control should compute desired acceleration and use
   // inverse dynamics to compute torque.
+
+// append current lander position to data file
+FILE *datfile;
+
+datfile = fopen("problem2_3.txt", "ab+");
+fprintf(datfile, "%g %g %g %g\n", count, s->lander_x_d[XX], s->lander_x_d[YY], s->lander_x_d[ZZ])
 
   return 0;
 }
