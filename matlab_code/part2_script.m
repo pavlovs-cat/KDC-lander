@@ -23,11 +23,12 @@ for m = 0:7
     n(end+1:end+3) = {sprintf('%dx',m), sprintf('%dy',m),sprintf('%dz',m)};
 end
 
-% Exctract marker locations for initial period
+%%%%% PROBLEM 2 PART A %%%%%
+% Extract marker locations for initial period
 pos_vec = extract_data(data_file, 'ml', n, 1:(Nsim+1));
 
 % Generate COMs & location for first 10 seconds
-[com, vel] = optim_com();
+[com, vel] = optim_com()
 
 % COM velocity in the world frame, checked using mrdplot
 % vel_w = [0.05 0.02 0.01];
@@ -37,6 +38,7 @@ pos_vec = extract_data(data_file, 'ml', n, 1:(Nsim+1));
 % Use quat & R to check values with simulation data given by mrdplot
 [quat, R] = lander_world_offset();
 
+% Uses linear velocity to predict COM position for next 10 seconds
 all_time = [0; init_times'];
 com_pos = horzcat(all_time,zeros(length(all_time),3));
 com_pos(1,2:4) = com;
@@ -72,6 +74,7 @@ if gen_plot == 1
   plot_results(th_sim(4, 1:Nsim), th(4, :), init_times, 'q_3');
 end
 
+%%%%% PART B %%%%%
 % Extract simulated ang accels and velocities
 w_sim = extract_data(data_file, 'a_w', {'x', 'y', 'z'}, 1 : Nsim + N)';
 
@@ -85,13 +88,17 @@ if gen_plot == 1
   plot_results(w_sim(3, 1:Nsim), w_vec(3, :), init_times, 'w_z');
 end
 
+%%%%% PART C %%%%%
 % Compute angular accelerations
 w_dot_vec = pt2C_angacc(w_vec, tau);
 
+
+%%%%% PART D %%%%%
 % Compute Moment of Inertia matrixs
 I = pt2D_moi(w_vec, w_dot_vec);
-
 % I = [0.1739 0 0; 0 0.5931  0; 0 0 0.7861]; % In WORLD frame
+
+%%%%% PART E %%%%%
 [ q,w,a ] = pt2E_traj(th(:, end-1), w_vec(:, end-1), w_dot_vec(:, end-2),...
                       I, tau, N);
 if gen_plot == 1
@@ -109,4 +116,6 @@ for idx = 1 : size(th, 2)
 end
 
 com_traj = horzcat(com_pos,vertcat([1 0 0 0], th_assign'));
-dlmwrite('com_traj_lander.txt',com_traj,'delimiter',' ','precision',6)
+% dlmwrite('com_traj_lander.txt',com_traj,'delimiter',' ','precision',6)
+% Writes .dat file for part 2A
+% dlmwrite('problem_2_0.dat',com_traj,'delimiter',' ','precision',6)
