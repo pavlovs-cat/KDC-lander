@@ -103,10 +103,13 @@ end
 % Uncomment to write txt file again
 % Rotate values to assignment frame
 th_assign = th;
+w_vec_assign = R*w_vec;
+w_dot_vec_assign = R*w_dot_vec;
 quat_r = rotm2quat(R);
 for idx = 1 : size(th, 2)
-   th_assign(:, idx) = quatmultiply( quat_r',  th(:, idx)' )'; 
+   th_assign(:, idx) = quatmultiply( quat_r',  th(:, idx)' )';
 end
 
-com_traj = horzcat(com_pos,vertcat([1 0 0 0], th_assign'));
-dlmwrite('com_traj_lander.txt',com_traj,'delimiter',' ','precision',6)
+com_pos_world = horzcat(com_pos(:, 1), com_pos(:, 2:4)*R);
+com_traj = horzcat(com_pos_world,vertcat([1 0 0 0], th'));
+dlmwrite('problem2_3.dat',com_traj,'delimiter',' ','precision',6)
