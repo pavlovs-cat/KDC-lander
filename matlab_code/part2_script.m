@@ -119,3 +119,11 @@ com_traj = horzcat(com_pos,vertcat([1 0 0 0], th_assign'));
 % dlmwrite('com_traj_lander.txt',com_traj,'delimiter',' ','precision',6)
 % Writes .dat file for part 2A
 % dlmwrite('problem_2_0.dat',com_traj,'delimiter',' ','precision',6)
+
+if gen_plot == 1
+    plot(init_times,th_assign(1,:)',init_times,th_assign(2,:)', ...
+        init_times,th_assign(3,:)',init_times,th_assign(4,:)')
+    xlabel('time (seconds)')
+    legend('q_{scalar}','q_x','q_y','q_z')
+    title('Marker Cloud Orientation in Assignment Coordinate System')
+end
