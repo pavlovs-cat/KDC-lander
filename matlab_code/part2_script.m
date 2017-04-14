@@ -112,4 +112,4 @@ end
 
 com_pos_world = horzcat(com_pos(:, 1), com_pos(:, 2:4)*R);
 com_traj = horzcat(com_pos_world,vertcat([1 0 0 0], th'));
-dlmwrite('problem2_3.dat',com_traj,'delimiter',' ','precision',6)
+% dlmwrite('problem2_3.dat',com_traj,'delimiter',' ','precision',6)
