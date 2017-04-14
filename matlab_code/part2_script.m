@@ -43,6 +43,11 @@ com_pos(1,2:4) = com;
 for k = 2:length(all_time)
     com_pos(k,2:4) = com + vel*all_time(k,1);
 end
+com10 = com_pos(end,2:4);
+com_future = zeros(length(predict_times),3);
+for h = 1:length(predict_times)
+    com_future(h,:) = com10 + vel*(predict_times(h)-10);
+end
 
 % Store quaternions for each timestamp
 Rots = cat(3, eye(3), zeros(3, 3, Nsim));
@@ -110,6 +115,6 @@ for idx = 1 : size(th, 2)
    th_assign(:, idx) = quatmultiply( quat_r',  th(:, idx)' )';
 end
 
-com_pos_world = horzcat(com_pos(:, 1), com_pos(:, 2:4)*R);
-com_traj = horzcat(com_pos_world,vertcat([1 0 0 0], th'));
-% dlmwrite('problem2_3.dat',com_traj,'delimiter',' ','precision',6)
+com_pos_world = horzcat(predict_times', com_future*R);
+com_traj = horzcat(com_pos_world,q');
+dlmwrite('problem_2_3.dat',com_traj,'delimiter',' ','precision',6)
